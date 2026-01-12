@@ -4,15 +4,15 @@ create extension if not exists vector;
 
 -- Create a table to store your documents
 create table if not exists documents (
-  id uuid primary key,
+  id uuid primary key default gen_random_uuid(),
   content text,
   metadata jsonb,
-  embedding vector(768) -- Gemini Embeddings are 768 dimensions
+  embedding vector(1536) -- OpenAI text-embedding-3-small dimensions
 );
 
 -- Create a function to search for documents
 create or replace function match_documents (
-  query_embedding vector(768),
+  query_embedding vector(1536),
   match_threshold float,
   match_count int
 )

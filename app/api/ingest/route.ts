@@ -1,9 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-// import { GoogleGenerativeAIEmbeddings } from "@langchain/google-genai";
 import { supabase } from "@/lib/supabase";
 import { RecursiveCharacterTextSplitter } from "@langchain/textsplitters";
 import { WebPDFLoader } from "@langchain/community/document_loaders/web/pdf";
-import { JinaEmbeddings } from "@langchain/community/embeddings/jina";
+import { OpenAIEmbeddings } from "@langchain/openai";
 
 export async function POST(req: NextRequest) {
   try {
@@ -31,10 +30,10 @@ export async function POST(req: NextRequest) {
     // splitDocuments takes Document[]
     const output = await splitter.splitDocuments(docs);
 
-    // Use Jina for embeddings
-    const embeddings = new JinaEmbeddings({
-      apiKey: process.env.JINA_API_KEY,
-      model: "jina-embeddings-v2-base-en",
+    // Use OpenAI for embeddings
+    const embeddings = new OpenAIEmbeddings({
+      apiKey: process.env.OPENAI_API_KEY,
+      model: "text-embedding-3-small",
     });
 
     // Process chunks and store in Supabase

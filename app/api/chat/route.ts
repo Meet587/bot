@@ -6,7 +6,6 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
     const { messages } = body;
-
     // Convert JSON messages to LangChain Message objects
     const langChainMessages: BaseMessage[] = messages.map((m: any) => {
       if (m.role === "user") {
@@ -15,6 +14,8 @@ export async function POST(req: NextRequest) {
         return new AIMessage(m.content);
       }
     });
+    console.log(langChainMessages);
+
 
     const inputs = { messages: langChainMessages };
 
