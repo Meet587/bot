@@ -101,7 +101,7 @@ export default function ChatInterface() {
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
                     placeholder="Type your question..."
-                    className="flex-1 px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-50 focus:bg-white transition-all"
+                    className="flex-1 px-4 py-3 rounded-xl border border-gray-200 text-black focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-50 focus:bg-white transition-all"
                 />
                 <button
                     type="submit"

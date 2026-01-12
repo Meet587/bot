@@ -14,8 +14,6 @@ export async function POST(req: NextRequest) {
         return new AIMessage(m.content);
       }
     });
-    console.log(langChainMessages);
-
 
     const inputs = { messages: langChainMessages };
 

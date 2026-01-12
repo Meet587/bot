@@ -14,6 +14,4 @@ if (!supabaseKey && process.env.NODE_ENV !== 'production') {
     console.warn('Missing Supabase environment variables. Using placeholders.');
 }
 
-console.log('Supabase config:', { url: supabaseUrl, keyLength: supabaseKey.length });
-
 export const supabase = createClient(supabaseUrl, supabaseKey);

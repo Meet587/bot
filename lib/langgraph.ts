@@ -34,15 +34,15 @@ async function retrieve(state: AgentState): Promise<Partial<AgentState>> {
 
     const { data: documents, error } = await supabase.rpc("match_documents", {
         query_embedding: embedding,
-        match_threshold: 0.5,
-        match_count: 5,
+        match_threshold: 0.1,
+        match_count: 1,
     });
 
     if (error) {
         console.error("Supabase match_documents error:", error);
         return { context: "" };
     }
-
+    
     const context = documents?.map((doc: any) => doc.content).join("\n\n") || "";
     return { context };
 }
