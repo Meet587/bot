@@ -1,6 +1,10 @@
 "use client";
 
 import { Plus, MessageSquare, Trash2, Github } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export interface Chat {
     id: string;
@@ -19,55 +23,65 @@ interface SidebarProps {
 
 export default function Sidebar({ chats, onSelectChat, selectedChatId, onNewChat, onDeleteChat, isLoading }: SidebarProps) {
     return (
-        <div className="w-64 bg-gray-900 h-screen flex flex-col border-r border-gray-800 text-white flex-shrink-0 transition-all duration-300">
-            <div className="p-4 border-b border-gray-800">
-                <button
+        <div className="w-64 bg-sidebar h-screen flex flex-col border-r border-sidebar-border text-sidebar-foreground flex-shrink-0 transition-all duration-300">
+            <div className="p-4 border-b border-sidebar-border">
+                <Button
                     onClick={onNewChat}
-                    className="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors font-medium"
+                    className="w-full justify-start gap-2 bg-primary hover:bg-primary/90 text-primary-foreground"
                 >
                     <Plus className="w-4 h-4" />
                     New Chat
-                </button>
+                </Button>
             </div>
 
-            <div className="flex-1 overflow-y-auto p-2 space-y-1">
-                {isLoading ? (
-                    <div className="text-gray-400 text-center text-sm py-4">Loading chats...</div>
-                ) : chats.length === 0 ? (
-                    <div className="text-gray-500 text-center text-sm py-4">No chats yet.</div>
-                ) : (
-                    chats.map((chat) => (
-                        <div
-                            key={chat.id}
-                            onClick={() => onSelectChat(chat.id)}
-                            className={`group flex items-center justify-between px-3 py-3 rounded-lg cursor-pointer transition-all ${selectedChatId === chat.id
-                                    ? "bg-gray-800 text-white"
-                                    : "text-gray-400 hover:bg-gray-800/50 hover:text-gray-200"
-                                }`}
-                        >
-                            <div className="flex items-center gap-3 overflow-hidden">
-                                <MessageSquare className="w-4 h-4 flex-shrink-0" />
-                                <span className="truncate text-sm font-medium">{chat.title || "Untitled Chat"}</span>
-                            </div>
-                            <button
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    onDeleteChat(chat.id);
-                                }}
-                                className="opacity-0 group-hover:opacity-100 p-1 hover:text-red-400 transition-opacity"
-                            >
-                                <Trash2 className="w-3 h-3" />
-                            </button>
+            <ScrollArea className="flex-1 p-2 min-h-0">
+                <div className="space-y-1">
+                    {isLoading ? (
+                        <div className="space-y-2 px-2 py-4">
+                            <Skeleton className="h-10 w-full bg-sidebar-accent" />
+                            <Skeleton className="h-10 w-full bg-sidebar-accent" />
+                            <Skeleton className="h-10 w-full bg-sidebar-accent" />
                         </div>
-                    ))
-                )}
-            </div>
+                    ) : chats.length === 0 ? (
+                        <div className="text-muted-foreground text-center text-sm py-4">No chats yet.</div>
+                    ) : (
+                        chats.map((chat) => (
+                            <div
+                                key={chat.id}
+                                onClick={() => onSelectChat(chat.id)}
+                                className={`group flex items-center justify-between px-3 py-3 rounded-lg cursor-pointer transition-all ${selectedChatId === chat.id
+                                    ? "bg-sidebar-accent text-sidebar-accent-foreground"
+                                    : "text-muted-foreground hover:bg-sidebar-accent/50 hover:text-sidebar-foreground"
+                                    }`}
+                            >
+                                <div className="flex items-center gap-3 overflow-hidden">
+                                    <MessageSquare className="w-4 h-4 flex-shrink-0" />
+                                    <span className="truncate text-sm font-medium">{chat.title || "Untitled Chat"}</span>
+                                </div>
+                                <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        onDeleteChat(chat.id);
+                                    }}
+                                    className="h-6 w-6 opacity-0 group-hover:opacity-100 p-0 hover:bg-destructive hover:text-destructive-foreground text-muted-foreground transition-all"
+                                >
+                                    <Trash2 className="w-3 h-3" />
+                                </Button>
+                            </div>
+                        ))
+                    )}
+                </div>
+            </ScrollArea>
 
-            <div className="p-4 border-t border-gray-800">
-                <div className="flex items-center gap-3 text-gray-400 text-sm">
-                    <div className="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center">
-                        <Github className="w-4 h-4" />
-                    </div>
+            <div className="p-4 border-t border-sidebar-border">
+                <div className="flex items-center gap-3 text-sidebar-foreground text-sm">
+                    <Avatar className="h-8 w-8">
+                        <AvatarFallback className="bg-muted text-muted-foreground">
+                            <Github className="w-4 h-4" />
+                        </AvatarFallback>
+                    </Avatar>
                     <span>User</span>
                 </div>
             </div>

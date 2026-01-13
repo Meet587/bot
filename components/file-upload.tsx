@@ -1,8 +1,10 @@
 
-'use client';
+"use client";
 
 import { useState } from 'react';
 import { Upload, FileText, CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 
 export default function FileUpload({ onUploadComplete, chatId }: { onUploadComplete: () => void; chatId: string | null }) {
     const [file, setFile] = useState<File | null>(null);
@@ -58,58 +60,59 @@ export default function FileUpload({ onUploadComplete, chatId }: { onUploadCompl
     };
 
     return (
-        <div className="w-full max-w-md mx-auto p-6 bg-white rounded-xl shadow-md space-y-4 border border-gray-100">
-            <div className="text-center">
-                <h2 className="text-2xl font-bold text-gray-800">Upload PDF</h2>
-                <p className="text-gray-500 text-sm">Upload a document to chat with it.</p>
-            </div>
-
-            <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 flex flex-col items-center justify-center space-y-3 hover:border-blue-500 transition-colors cursor-pointer relative">
-                <input
-                    type="file"
-                    accept=".pdf"
-                    onChange={handleFileChange}
-                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                    disabled={!chatId}
-                />
-                {file ? (
-                    <FileText className="w-12 h-12 text-blue-500" />
-                ) : (
-                    <Upload className={`w-12 h-12 ${chatId ? 'text-gray-400' : 'text-gray-300'}`} />
-                )}
-                <span className={`text-gray-600 font-medium ${!chatId && 'text-gray-400'}`}>
-                    {file ? file.name : chatId ? 'Click to select or drag PDF' : 'Select a chat first'}
-                </span>
-            </div>
-
-            {status === 'error' && (
-                <div className="flex items-center gap-2 text-red-600 text-sm bg-red-50 p-3 rounded-lg">
-                    <AlertCircle className="w-4 h-4" />
-                    <span>{message}</span>
+        <Card className="w-full max-w-md mx-auto shadow-md border-border">
+            <CardHeader className="text-center">
+                <CardTitle className="text-2xl font-bold text-card-foreground">Upload PDF</CardTitle>
+                <CardDescription>Upload a document to chat with it.</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+                <div className="border-2 border-dashed border-input rounded-lg p-8 flex flex-col items-center justify-center space-y-3 hover:border-primary transition-colors cursor-pointer relative">
+                    <input
+                        type="file"
+                        accept=".pdf"
+                        onChange={handleFileChange}
+                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                        disabled={!chatId}
+                    />
+                    {file ? (
+                        <FileText className="w-12 h-12 text-primary" />
+                    ) : (
+                        <Upload className={`w-12 h-12 ${chatId ? 'text-muted-foreground' : 'text-muted-foreground/50'}`} />
+                    )}
+                    <span className={`text-muted-foreground font-medium ${!chatId && 'opacity-50'}`}>
+                        {file ? file.name : chatId ? 'Click to select or drag PDF' : 'Select a chat first'}
+                    </span>
                 </div>
-            )}
 
-            {status === 'success' && (
-                <div className="flex items-center gap-2 text-green-600 text-sm bg-green-50 p-3 rounded-lg">
-                    <CheckCircle className="w-4 h-4" />
-                    <span>{message}</span>
-                </div>
-            )}
-
-            <button
-                onClick={handleUpload}
-                disabled={!file || uploading || !chatId}
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-            >
-                {uploading ? (
-                    <>
-                        <Loader2 className="w-5 h-5 animate-spin" />
-                        Indexing...
-                    </>
-                ) : (
-                    'Upload & Index'
+                {status === 'error' && (
+                    <div className="flex items-center gap-2 text-destructive text-sm bg-destructive/10 p-3 rounded-lg">
+                        <AlertCircle className="w-4 h-4" />
+                        <span>{message}</span>
+                    </div>
                 )}
-            </button>
-        </div>
+
+                {status === 'success' && (
+                    <div className="flex items-center gap-2 text-green-600 text-sm bg-green-50 p-3 rounded-lg">
+                        <CheckCircle className="w-4 h-4" />
+                        <span>{message}</span>
+                    </div>
+                )}
+
+                <Button
+                    onClick={handleUpload}
+                    disabled={!file || uploading || !chatId}
+                    className="w-full font-bold"
+                >
+                    {uploading ? (
+                        <>
+                            <Loader2 className="w-5 h-5 animate-spin mr-2" />
+                            Indexing...
+                        </>
+                    ) : (
+                        'Upload & Index'
+                    )}
+                </Button>
+            </CardContent>
+        </Card>
     );
 }

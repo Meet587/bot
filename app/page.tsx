@@ -5,6 +5,9 @@ import FileUpload from '@/components/file-upload';
 import ChatInterface from '@/components/chat-interface';
 import Sidebar, { Chat } from '@/components/sidebar';
 import { MessageSquare, UploadCloud, Menu, X } from 'lucide-react';
+import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState<'upload' | 'chat'>('upload');
@@ -50,9 +53,7 @@ export default function Home() {
         const data = await res.json();
         setChats([data.chat, ...chats]);
         setSelectedChatId(data.chat.id);
-        setActiveTab('upload'); // Default to upload for new chat? Or chat?
-        // User flow: New Chat -> Upload document -> Ask question.
-        // So default to upload makes sense.
+        setActiveTab('upload');
       }
     } catch (error) {
       console.error("Failed to create chat", error);
@@ -79,24 +80,40 @@ export default function Home() {
     }
   };
 
+  const SidebarComponent = (
+    <Sidebar
+      chats={chats}
+      selectedChatId={selectedChatId}
+      onSelectChat={(id) => {
+        setSelectedChatId(id);
+        setIsSidebarOpen(false);
+        setActiveTab('chat');
+      }}
+      onNewChat={handleNewChat}
+      onDeleteChat={handleDeleteChat}
+      isLoading={isLoadingChats}
+    />
+  );
+
   const renderContent = () => {
     if (!selectedChatId) {
       return (
         <div className="flex flex-col items-center justify-center h-full text-center p-8">
-          <div className="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mb-6">
+          <div className="w-16 h-16 bg-primary/10 text-primary rounded-full flex items-center justify-center mb-6">
             <MessageSquare className="w-8 h-8" />
           </div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Welcome to PDF ChatBot</h1>
-          <p className="text-gray-500 max-w-md mb-8">
+          <h1 className="text-3xl font-bold text-foreground mb-2">Welcome to PDF ChatBot</h1>
+          <p className="text-muted-foreground max-w-md mb-8">
             Select a chat from the sidebar or create a new one to get started. Upload your documents and ask questions instantly.
           </p>
-          <button
+          <Button
             onClick={handleNewChat}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-medium transition-colors flex items-center gap-2"
+            size="lg"
+            className="gap-2"
           >
             <UploadCloud className="w-5 h-5" />
             Start New Chat
-          </button>
+          </Button>
         </div>
       );
     }
@@ -104,50 +121,37 @@ export default function Home() {
     return (
       <div className="max-w-5xl mx-auto w-full p-4 md:p-8 h-full flex flex-col">
         {/* Header */}
-        <header className="bg-white border-b border-gray-200 mb-6 rounded-xl shadow-sm overflow-hidden flex-shrink-0">
+        <header className="bg-background border-b border-border mb-6 rounded-xl shadow-sm overflow-hidden flex-shrink-0">
           <div className="px-4 h-16 flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <h1 className="font-bold text-xl text-gray-900 tracking-tight">
+              <h1 className="font-bold text-xl text-foreground tracking-tight">
                 {chats.find(c => c.id === selectedChatId)?.title || "Chat"}
               </h1>
             </div>
-            <nav className="flex gap-1 bg-gray-100 p-1 rounded-lg">
-              <button
-                onClick={() => setActiveTab('upload')}
-                className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${activeTab === 'upload'
-                  ? 'bg-white text-blue-600 shadow-sm'
-                  : 'text-gray-500 hover:text-gray-700'
-                  }`}
-              >
-                <span className="flex items-center gap-2">
+
+            <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as 'upload' | 'chat')} className="w-[400px]">
+              <TabsList className="grid w-full grid-cols-2">
+                <TabsTrigger value="upload" className="flex items-center gap-2">
                   <UploadCloud className="w-4 h-4" />
                   Upload
-                </span>
-              </button>
-              <button
-                onClick={() => setActiveTab('chat')}
-                className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${activeTab === 'chat'
-                  ? 'bg-white text-blue-600 shadow-sm'
-                  : 'text-gray-500 hover:text-gray-700'
-                  }`}
-              >
-                <span className="flex items-center gap-2">
+                </TabsTrigger>
+                <TabsTrigger value="chat" className="flex items-center gap-2">
                   <MessageSquare className="w-4 h-4" />
                   Chat
-                </span>
-              </button>
-            </nav>
+                </TabsTrigger>
+              </TabsList>
+            </Tabs>
           </div>
         </header>
 
         <div className="flex-1 overflow-hidden">
-          <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 h-full">
-            {activeTab === 'upload' ? (
+          <Tabs value={activeTab} className="h-full">
+            <TabsContent value="upload" className="h-full m-0 data-[state=inactive]:hidden">
               <div className="flex flex-col items-center justify-center h-full">
                 <div className="w-full max-w-md">
                   <div className="mb-8 text-center">
-                    <h2 className="text-3xl font-extrabold text-gray-900 mb-4">Upload a PDF</h2>
-                    <p className="text-gray-600">
+                    <h2 className="text-3xl font-extrabold text-foreground mb-4">Upload a PDF</h2>
+                    <p className="text-muted-foreground">
                       Upload documents to this chat context.
                     </p>
                   </div>
@@ -157,50 +161,37 @@ export default function Home() {
                   />
                 </div>
               </div>
-            ) : (
+            </TabsContent>
+            <TabsContent value="chat" className="h-full m-0 data-[state=inactive]:hidden">
               <div className="h-full">
                 <ChatInterface chatId={selectedChatId} />
               </div>
-            )}
-          </div>
+            </TabsContent>
+          </Tabs>
         </div>
       </div>
     );
   };
 
   return (
-    <main className="flex h-screen bg-gray-50 overflow-hidden font-sans">
-      {/* Mobile Sidebar Toggle */}
+    <main className="flex h-screen bg-background overflow-hidden font-sans">
+      {/* Mobile Sidebar */}
       <div className="md:hidden fixed top-4 left-4 z-50">
-        <button
-          onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-          className="p-2 bg-white rounded-lg shadow-md"
-        >
-          {isSidebarOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-        </button>
+        <Sheet open={isSidebarOpen} onOpenChange={setIsSidebarOpen}>
+          <SheetTrigger asChild>
+            <Button variant="outline" size="icon" className="md:hidden">
+              <Menu className="w-6 h-6" />
+            </Button>
+          </SheetTrigger>
+          <SheetContent side="left" className="p-0 w-64 border-r border-sidebar-border bg-sidebar text-sidebar-foreground">
+            {SidebarComponent}
+          </SheetContent>
+        </Sheet>
       </div>
 
-      {/* Sidebar */}
-      <div className={`
-        fixed inset-y-0 left-0 z-40 transform transition-transform duration-300 ease-in-out md:translate-x-0 md:static md:inset-auto
-        ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}
-      `}>
-        <Sidebar
-          chats={chats}
-          selectedChatId={selectedChatId}
-          onSelectChat={(id) => {
-            setSelectedChatId(id);
-            setIsSidebarOpen(false); // Close on mobile select
-            // Automatically switch to chat tab on existing chat select normally, 
-            // but user might want to stick to current tab. 
-            // Let's reset to 'chat' tab if they select a chat to see history?
-            // Actually, if they select a chat, they probably want to see the chat.
-            setActiveTab('chat');
-          }}
-          onNewChat={handleNewChat}
-          onDeleteChat={handleDeleteChat}
-          isLoading={isLoadingChats}
-        />
+      {/* Desktop Sidebar */}
+      <div className="hidden md:block h-full">
+        {SidebarComponent}
       </div>
 
       {/* Main Content */}

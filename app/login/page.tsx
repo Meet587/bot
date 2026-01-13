@@ -4,6 +4,10 @@ import { createClient } from "@/lib/supabase/client";
 import { login } from "./actions";
 import { useActionState } from "react";
 import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 
 const initialState = {
   error: null as string | null,
@@ -34,86 +38,73 @@ export default function LoginPage() {
 
   return (
     <div className="flex h-screen items-center justify-center bg-gray-50">
-      <div className="w-full max-w-md space-y-8 rounded-lg bg-white p-6 shadow-md">
-        <div className="text-center">
-          <h2 className="mt-6 text-3xl font-bold tracking-tight text-gray-900">
-            Welcome Back
-          </h2>
-          <p className="mt-2 text-sm text-gray-600">
-            Sign in to continue to your account
-          </p>
-        </div>
+      <Card className="w-full max-w-md">
+        <CardHeader className="text-center">
+          <CardTitle className="text-2xl font-bold">Welcome Back</CardTitle>
+          <CardDescription>Sign in to continue to your account</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {state.error && (
+            <div className="rounded-md bg-red-50 p-4 text-sm text-red-700">
+              {state.error}
+            </div>
+          )}
 
-        {state.error && (
-          <div className="rounded-md bg-red-50 p-4 text-sm text-red-700">
-            {state.error}
-          </div>
-        )}
-
-        <div className="mt-8 space-y-6">
-          <form action={formAction} className="space-y-6">
-            <div className="-space-y-px rounded-md shadow-sm">
-              <div>
-                <label htmlFor="email-address" className="sr-only">
-                  Email address
-                </label>
-                <input
-                  id="email-address"
-                  name="email"
-                  type="email"
-                  autoComplete="email"
-                  required
-                  className="relative block w-full rounded-t-md border-0 py-1.5 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:z-10 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 px-3"
-                  placeholder="Email address"
-                />
-              </div>
-              <div>
-                <label htmlFor="password" className="sr-only">
-                  Password
-                </label>
-                <input
-                  id="password"
-                  name="password"
-                  type="password"
-                  autoComplete="current-password"
-                  required
-                  className="relative block w-full rounded-b-md border-0 py-1.5 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:z-10 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 px-3"
-                  placeholder="Password"
-                />
-              </div>
+          <form action={formAction} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="email-address">Email address</Label>
+              <Input
+                id="email-address"
+                name="email"
+                type="email"
+                autoComplete="email"
+                required
+                placeholder="name@example.com"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="password">Password</Label>
+              <Input
+                id="password"
+                name="password"
+                type="password"
+                autoComplete="current-password"
+                required
+                placeholder="Enter your password"
+              />
             </div>
 
             <div className="flex items-center justify-end">
-              <div className="text-sm">
-                <Link href="/forgot-password" className="font-medium text-indigo-600 hover:text-indigo-500">
-                  Forgot your password?
-                </Link>
-              </div>
+              <Link
+                href="/forgot-password"
+                className="text-sm font-medium text-blue-600 hover:text-blue-500"
+              >
+                Forgot your password?
+              </Link>
             </div>
 
-            <div>
-              <button
-                type="submit"
-                disabled={isPending}
-                className="group relative flex w-full justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:opacity-70"
-              >
-                {isPending ? "Signing in..." : "Sign in"}
-              </button>
-            </div>
+            <Button
+              type="submit"
+              disabled={isPending}
+              className="w-full bg-blue-600 hover:bg-blue-700 font-semibold"
+            >
+              {isPending ? "Signing in..." : "Sign in"}
+            </Button>
           </form>
 
           <div className="relative">
             <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-gray-300" />
+              <span className="w-full border-t border-gray-300" />
             </div>
-            <div className="relative flex justify-center text-sm">
+            <div className="relative flex justify-center text-xs uppercase">
               <span className="bg-white px-2 text-gray-500">Or continue with</span>
             </div>
           </div>
 
-          <button
+          <Button
+            variant="outline"
             onClick={handleGoogleLogin}
-            className="flex w-full items-center justify-center gap-3 rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+            className="w-full gap-2"
           >
             <svg className="h-5 w-5" viewBox="0 0 24 24">
               <path
@@ -134,18 +125,17 @@ export default function LoginPage() {
               />
             </svg>
             Sign in with Google
-          </button>
-        </div>
-
-        <div className="text-center text-sm">
-          <p className="text-gray-600">
+          </Button>
+        </CardContent>
+        <CardFooter className="justify-center">
+          <p className="text-sm text-gray-600">
             Don&apos;t have an account?{" "}
-            <Link href="/register" className="font-semibold text-indigo-600 hover:text-indigo-500">
+            <Link href="/register" className="font-semibold text-blue-600 hover:text-blue-500">
               Sign up
             </Link>
           </p>
-        </div>
-      </div>
+        </CardFooter>
+      </Card>
     </div>
   );
 }

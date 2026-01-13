@@ -3,6 +3,10 @@
 import { useActionState } from "react";
 import { signup } from "./actions";
 import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 
 const initialState = {
     error: null as string | null,
@@ -19,88 +23,71 @@ export default function RegisterPage() {
 
     return (
         <div className="flex h-screen items-center justify-center bg-gray-50">
-            <div className="w-full max-w-md space-y-8 rounded-lg bg-white p-6 shadow-md">
-                <div className="text-center">
-                    <h2 className="mt-6 text-3xl font-bold tracking-tight text-gray-900">
-                        Create an account
-                    </h2>
-                    <p className="mt-2 text-sm text-gray-600">
-                        Sign up to get started
-                    </p>
-                </div>
+            <Card className="w-full max-w-md">
+                <CardHeader className="text-center">
+                    <CardTitle className="text-2xl font-bold">Create an account</CardTitle>
+                    <CardDescription>Sign up to get started</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                    {state.error && (
+                        <div className="rounded-md bg-red-50 p-4 text-sm text-red-700">
+                            {state.error}
+                        </div>
+                    )}
 
-                {state.error && (
-                    <div className="rounded-md bg-red-50 p-4 text-sm text-red-700">
-                        {state.error}
-                    </div>
-                )}
-
-                <form action={formAction} className="mt-8 space-y-6">
-                    <div className="-space-y-px rounded-md shadow-sm">
-                        <div>
-                            <label htmlFor="email-address" className="sr-only">
-                                Email address
-                            </label>
-                            <input
+                    <form action={formAction} className="space-y-4">
+                        <div className="space-y-2">
+                            <Label htmlFor="email-address">Email address</Label>
+                            <Input
                                 id="email-address"
                                 name="email"
                                 type="email"
                                 autoComplete="email"
                                 required
-                                className="relative block w-full rounded-t-md border-0 py-1.5 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:z-10 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 px-3"
-                                placeholder="Email address"
+                                placeholder="name@example.com"
                             />
                         </div>
-                        <div>
-                            <label htmlFor="password" className="sr-only">
-                                Password
-                            </label>
-                            <input
+                        <div className="space-y-2">
+                            <Label htmlFor="password">Password</Label>
+                            <Input
                                 id="password"
                                 name="password"
                                 type="password"
                                 autoComplete="new-password"
                                 required
-                                className="relative block w-full border-0 py-1.5 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:z-10 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 px-3"
-                                placeholder="Password"
+                                placeholder="Create a password"
                             />
                         </div>
-                        <div>
-                            <label htmlFor="confirm-password" className="sr-only">
-                                Confirm Password
-                            </label>
-                            <input
+                        <div className="space-y-2">
+                            <Label htmlFor="confirm-password">Confirm Password</Label>
+                            <Input
                                 id="confirm-password"
                                 name="confirmPassword"
                                 type="password"
                                 autoComplete="new-password"
                                 required
-                                className="relative block w-full rounded-b-md border-0 py-1.5 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:z-10 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 px-3"
-                                placeholder="Confirm Password"
+                                placeholder="Confirm your password"
                             />
                         </div>
-                    </div>
 
-                    <div>
-                        <button
+                        <Button
                             type="submit"
                             disabled={isPending}
-                            className="group relative flex w-full justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:opacity-70"
+                            className="w-full bg-blue-600 hover:bg-blue-700 font-semibold"
                         >
                             {isPending ? "Creating account..." : "Sign up"}
-                        </button>
-                    </div>
-                </form>
-
-                <div className="text-center text-sm">
-                    <p className="text-gray-600">
+                        </Button>
+                    </form>
+                </CardContent>
+                <CardFooter className="justify-center">
+                    <p className="text-sm text-gray-600">
                         Already have an account?{" "}
-                        <Link href="/login" className="font-semibold text-indigo-600 hover:text-indigo-500">
+                        <Link href="/login" className="font-semibold text-blue-600 hover:text-blue-500">
                             Sign in
                         </Link>
                     </p>
-                </div>
-            </div>
+                </CardFooter>
+            </Card>
         </div>
     );
 }

@@ -3,6 +3,11 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { Send, User, Bot, Loader2 } from 'lucide-react';
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Card } from "@/components/ui/card";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface Message {
     role: 'user' | 'assistant';
@@ -79,70 +84,72 @@ export default function ChatInterface({ chatId }: ChatInterfaceProps) {
     };
 
     return (
-        <div className="flex flex-col h-full w-full bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
-            <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50">
-                {!chatId ? (
-                    <div className="flex flex-col items-center justify-center h-full text-gray-400">
-                        <h3 className="text-lg font-semibold">Select a chat to start</h3>
-                    </div>
-                ) : messages.length === 0 ? (
-                    <div className="text-center text-gray-400 mt-20">
-                        <h3 className="text-lg font-semibold">Ask me anything about your PDF in this chat!</h3>
-                    </div>
-                ) : (
-                    messages.map((m, index) => (
-                        <div
-                            key={index}
-                            className={`flex items-start gap-3 ${m.role === 'user' ? 'flex-row-reverse' : 'flex-row'
-                                }`}
-                        >
-                            <div
-                                className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${m.role === 'user' ? 'bg-blue-600' : 'bg-green-600'
-                                    }`}
-                            >
-                                {m.role === 'user' ? (
-                                    <User className="w-5 h-5 text-white" />
-                                ) : (
-                                    <Bot className="w-5 h-5 text-white" />
-                                )}
-                            </div>
-                            <div
-                                className={`p-3 rounded-2xl max-w-[80%] text-sm leading-relaxed shadow-sm whitespace-pre-wrap ${m.role === 'user'
-                                        ? 'bg-blue-600 text-white rounded-tr-none'
-                                        : 'bg-white text-gray-800 border border-gray-100 rounded-tl-none'
-                                    }`}
-                            >
-                                {m.content}
-                            </div>
+        <Card className="flex flex-col h-full w-full overflow-hidden border-border shadow-lg bg-background rounded-xl">
+            <ScrollArea className="flex-1 bg-muted/10 min-h-0">
+                <div className="p-4 space-y-4 min-h-full">
+                    {!chatId ? (
+                        <div className="flex flex-col items-center justify-center h-[50vh] text-muted-foreground">
+                            <h3 className="text-lg font-semibold">Select a chat to start</h3>
                         </div>
-                    ))
-                )}
-                {isLoading && (
-                    <div className="flex items-center gap-2 text-gray-400 text-sm ml-12">
-                        <Loader2 className="w-4 h-4 animate-spin" />
-                        <span>Thinking...</span>
-                    </div>
-                )}
-                <div ref={messagesEndRef} />
-            </div>
+                    ) : messages.length === 0 ? (
+                        <div className="text-center text-muted-foreground mt-20">
+                            <h3 className="text-lg font-semibold">Ask me anything about your PDF in this chat!</h3>
+                        </div>
+                    ) : (
+                        messages.map((m, index) => (
+                            <div
+                                key={index}
+                                className={`flex items-start gap-3 ${m.role === 'user' ? 'flex-row-reverse' : 'flex-row'
+                                    }`}
+                            >
+                                <Avatar className={`w-8 h-8 ${m.role === 'user' ? 'bg-primary' : 'bg-muted'}`}>
+                                    <AvatarFallback className={m.role === 'user' ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'}>
+                                        {m.role === 'user' ? (
+                                            <User className="w-5 h-5" />
+                                        ) : (
+                                            <Bot className="w-5 h-5" />
+                                        )}
+                                    </AvatarFallback>
+                                </Avatar>
+                                <div
+                                    className={`p-3 rounded-2xl max-w-[80%] text-sm leading-relaxed shadow-sm whitespace-pre-wrap ${m.role === 'user'
+                                        ? 'bg-primary text-primary-foreground rounded-tr-none'
+                                        : 'bg-card text-card-foreground border border-border rounded-tl-none'
+                                        }`}
+                                >
+                                    {m.content}
+                                </div>
+                            </div>
+                        ))
+                    )}
+                    {isLoading && (
+                        <div className="flex items-center gap-2 text-muted-foreground text-sm ml-12">
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                            <span>Thinking...</span>
+                        </div>
+                    )}
+                    <div ref={messagesEndRef} />
+                </div>
+            </ScrollArea>
 
-            <form onSubmit={handleSubmit} className="p-4 bg-white border-t border-gray-100 flex gap-2">
-                <input
+            <form onSubmit={handleSubmit} className="p-4 bg-background border-t border-border flex gap-2">
+                <Input
                     type="text"
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
                     placeholder={chatId ? "Type your question..." : "Select a chat first"}
                     disabled={!chatId}
-                    className="flex-1 px-4 py-3 rounded-xl border border-gray-200 text-black focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-50 focus:bg-white transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="flex-1"
                 />
-                <button
+                <Button
                     type="submit"
                     disabled={!input.trim() || isLoading || !chatId}
-                    className="bg-blue-600 hover:bg-blue-700 text-white p-3 rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    size="icon"
+                    className="shrink-0"
                 >
                     <Send className="w-5 h-5" />
-                </button>
+                </Button>
             </form>
-        </div>
+        </Card>
     );
 }
