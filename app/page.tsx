@@ -121,7 +121,7 @@ export default function Home() {
     return (
       <div className="max-w-5xl mx-auto w-full p-4 md:p-8 h-full flex flex-col">
         {/* Header */}
-        <header className="bg-background border-b border-border mb-6 rounded-xl shadow-sm overflow-hidden flex-shrink-0">
+        <header className="bg-background border-b border-border mb-6 rounded-xl shadow-sm overflow-hidden shrink-0">
           <div className="px-4 h-16 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <h1 className="font-bold text-xl text-foreground tracking-tight">
@@ -149,12 +149,12 @@ export default function Home() {
             <TabsContent value="upload" className="h-full m-0 data-[state=inactive]:hidden">
               <div className="flex flex-col items-center justify-center h-full">
                 <div className="w-full max-w-md">
-                  <div className="mb-8 text-center">
+                  {/* <div className="mb-8 text-center">
                     <h2 className="text-3xl font-extrabold text-foreground mb-4">Upload a PDF</h2>
                     <p className="text-muted-foreground">
                       Upload documents to this chat context.
                     </p>
-                  </div>
+                  </div> */}
                   <FileUpload
                     chatId={selectedChatId}
                     onUploadComplete={() => setActiveTab('chat')}

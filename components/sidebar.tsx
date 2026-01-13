@@ -1,6 +1,8 @@
 "use client";
 
-import { Plus, MessageSquare, Trash2, Github } from "lucide-react";
+import { Plus, MessageSquare, Trash2, Github, LogOut } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -22,6 +24,14 @@ interface SidebarProps {
 }
 
 export default function Sidebar({ chats, onSelectChat, selectedChatId, onNewChat, onDeleteChat, isLoading }: SidebarProps) {
+    const router = useRouter();
+    const supabase = createClient();
+
+    const handleLogout = async () => {
+        await supabase.auth.signOut();
+        router.push("/login");
+        router.refresh();
+    };
     return (
         <div className="w-64 bg-sidebar h-screen flex flex-col border-r border-sidebar-border text-sidebar-foreground flex-shrink-0 transition-all duration-300">
             <div className="p-4 border-b border-sidebar-border">
@@ -58,7 +68,7 @@ export default function Sidebar({ chats, onSelectChat, selectedChatId, onNewChat
                                     <MessageSquare className="w-4 h-4 flex-shrink-0" />
                                     <span className="truncate text-sm font-medium">{chat.title || "Untitled Chat"}</span>
                                 </div>
-                                <Button
+                                {/* <Button
                                     variant="ghost"
                                     size="icon"
                                     onClick={(e) => {
@@ -68,7 +78,7 @@ export default function Sidebar({ chats, onSelectChat, selectedChatId, onNewChat
                                     className="h-6 w-6 opacity-0 group-hover:opacity-100 p-0 hover:bg-destructive hover:text-destructive-foreground text-muted-foreground transition-all"
                                 >
                                     <Trash2 className="w-3 h-3" />
-                                </Button>
+                                </Button> */}
                             </div>
                         ))
                     )}
@@ -76,13 +86,23 @@ export default function Sidebar({ chats, onSelectChat, selectedChatId, onNewChat
             </ScrollArea>
 
             <div className="p-4 border-t border-sidebar-border">
-                <div className="flex items-center gap-3 text-sidebar-foreground text-sm">
-                    <Avatar className="h-8 w-8">
-                        <AvatarFallback className="bg-muted text-muted-foreground">
-                            <Github className="w-4 h-4" />
-                        </AvatarFallback>
-                    </Avatar>
-                    <span>User</span>
+                <div className="flex items-center justify-between w-full text-sidebar-foreground text-sm">
+                    <div className="flex items-center gap-3">
+                        <Avatar className="h-8 w-8">
+                            <AvatarFallback className="bg-muted text-muted-foreground">
+                                <Github className="w-4 h-4" />
+                            </AvatarFallback>
+                        </Avatar>
+                        <span>User</span>
+                    </div>
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={handleLogout}
+                        className="h-8 w-8 text-muted-foreground hover:text-foreground"
+                    >
+                        <LogOut className="w-4 h-4" />
+                    </Button>
                 </div>
             </div>
         </div>
