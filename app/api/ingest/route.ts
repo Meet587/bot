@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { supabase } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase/server";
 import { RecursiveCharacterTextSplitter } from "@langchain/textsplitters";
 import { WebPDFLoader } from "@langchain/community/document_loaders/web/pdf";
 import { OpenAIEmbeddings } from "@langchain/openai";
@@ -11,6 +11,13 @@ export async function POST(req: NextRequest) {
 
     if (!file) {
       return NextResponse.json({ error: "No file provided" }, { status: 400 });
+    }
+
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     // Convert file to blob
@@ -44,6 +51,7 @@ export async function POST(req: NextRequest) {
           content: doc.pageContent,
           embedding,
           metadata: { ...doc.metadata, filename: file.name },
+          user_id: user.id,
         };
       })
     );

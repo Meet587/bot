@@ -8,6 +8,7 @@ import { HumanMessage, AIMessage, BaseMessage } from "@langchain/core/messages";
 interface AgentState {
     messages: BaseMessage[];
     context: string;
+    userId: string;
 }
 
 // Initialize the OpenAI model
@@ -26,6 +27,7 @@ const embeddings = new OpenAIEmbeddings({
 // Retrieve Node: Search Supabase using OpenAI Embeddings
 async function retrieve(state: AgentState): Promise<Partial<AgentState>> {
     const messages = state.messages;
+    const userId = state.userId;
     const lastMessage = messages[messages.length - 1] as HumanMessage;
     const query = lastMessage.content as string;
 
@@ -36,13 +38,14 @@ async function retrieve(state: AgentState): Promise<Partial<AgentState>> {
         query_embedding: embedding,
         match_threshold: 0.1,
         match_count: 1,
+        filter_user_id: userId,
     });
 
     if (error) {
         console.error("Supabase match_documents error:", error);
         return { context: "" };
     }
-    
+
     const context = documents?.map((doc: any) => doc.content).join("\n\n") || "";
     return { context };
 }
@@ -73,6 +76,10 @@ const workflow = new StateGraph<AgentState>({
             default: () => [],
         },
         context: {
+            reducer: (a: string, b: string) => b,
+            default: () => "",
+        },
+        userId: {
             reducer: (a: string, b: string) => b,
             default: () => "",
         },

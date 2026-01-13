@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { createClient } from "@/lib/supabase/server";
 import { graph } from "@/lib/langgraph";
 import { HumanMessage, AIMessage, BaseMessage } from "@langchain/core/messages";
 
@@ -6,6 +7,14 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
     const { messages } = body;
+
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     // Convert JSON messages to LangChain Message objects
     const langChainMessages: BaseMessage[] = messages.map((m: any) => {
       if (m.role === "user") {
@@ -15,7 +24,7 @@ export async function POST(req: NextRequest) {
       }
     });
 
-    const inputs = { messages: langChainMessages };
+    const inputs = { messages: langChainMessages, userId: user.id };
 
     // We can use invoke to get the final state
     const result = await graph.invoke(inputs);
