@@ -8,9 +8,14 @@ export async function POST(req: NextRequest) {
   try {
     const formData = await req.formData();
     const file = formData.get("file") as File;
+    const chatId = formData.get("chatId") as string;
 
     if (!file) {
       return NextResponse.json({ error: "No file provided" }, { status: 400 });
+    }
+
+    if (!chatId) {
+      return NextResponse.json({ error: "No chatId provided" }, { status: 400 });
     }
 
     const supabase = await createClient();
@@ -52,6 +57,7 @@ export async function POST(req: NextRequest) {
           embedding,
           metadata: { ...doc.metadata, filename: file.name },
           user_id: user.id,
+          chat_id: chatId,
         };
       })
     );

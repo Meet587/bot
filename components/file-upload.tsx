@@ -4,7 +4,7 @@
 import { useState } from 'react';
 import { Upload, FileText, CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
 
-export default function FileUpload({ onUploadComplete }: { onUploadComplete: () => void }) {
+export default function FileUpload({ onUploadComplete, chatId }: { onUploadComplete: () => void; chatId: string | null }) {
     const [file, setFile] = useState<File | null>(null);
     const [uploading, setUploading] = useState(false);
     const [status, setStatus] = useState<'idle' | 'success' | 'error'>('idle');
@@ -20,12 +20,18 @@ export default function FileUpload({ onUploadComplete }: { onUploadComplete: () 
 
     const handleUpload = async () => {
         if (!file) return;
+        if (!chatId) {
+            setStatus('error');
+            setMessage('Please select a chat first.');
+            return;
+        }
 
         setUploading(true);
         setStatus('idle');
 
         const formData = new FormData();
         formData.append('file', file);
+        formData.append('chatId', chatId);
 
         try {
             const response = await fetch('/api/ingest', {
@@ -64,14 +70,15 @@ export default function FileUpload({ onUploadComplete }: { onUploadComplete: () 
                     accept=".pdf"
                     onChange={handleFileChange}
                     className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                    disabled={!chatId}
                 />
                 {file ? (
                     <FileText className="w-12 h-12 text-blue-500" />
                 ) : (
-                    <Upload className="w-12 h-12 text-gray-400" />
+                    <Upload className={`w-12 h-12 ${chatId ? 'text-gray-400' : 'text-gray-300'}`} />
                 )}
-                <span className="text-gray-600 font-medium">
-                    {file ? file.name : 'Click to select or drag PDF'}
+                <span className={`text-gray-600 font-medium ${!chatId && 'text-gray-400'}`}>
+                    {file ? file.name : chatId ? 'Click to select or drag PDF' : 'Select a chat first'}
                 </span>
             </div>
 
@@ -91,7 +98,7 @@ export default function FileUpload({ onUploadComplete }: { onUploadComplete: () 
 
             <button
                 onClick={handleUpload}
-                disabled={!file || uploading}
+                disabled={!file || uploading || !chatId}
                 className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
                 {uploading ? (

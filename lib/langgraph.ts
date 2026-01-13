@@ -9,6 +9,7 @@ interface AgentState {
     messages: BaseMessage[];
     context: string;
     userId: string;
+    chatId: string;
 }
 
 // Initialize the OpenAI model
@@ -27,7 +28,7 @@ const embeddings = new OpenAIEmbeddings({
 // Retrieve Node: Search Supabase using OpenAI Embeddings
 async function retrieve(state: AgentState): Promise<Partial<AgentState>> {
     const messages = state.messages;
-    const userId = state.userId;
+    const chatId = state.chatId;
     const lastMessage = messages[messages.length - 1] as HumanMessage;
     const query = lastMessage.content as string;
 
@@ -37,8 +38,8 @@ async function retrieve(state: AgentState): Promise<Partial<AgentState>> {
     const { data: documents, error } = await supabase.rpc("match_documents", {
         query_embedding: embedding,
         match_threshold: 0.1,
-        match_count: 1,
-        filter_user_id: userId,
+        match_count: 5,
+        filter_chat_id: chatId,
     });
 
     if (error) {
@@ -53,7 +54,6 @@ async function retrieve(state: AgentState): Promise<Partial<AgentState>> {
 // Generate Node: Use OpenAI to answer based on context
 async function generate(state: AgentState): Promise<Partial<AgentState>> {
     const { messages, context } = state;
-    // const lastMessage = messages[messages.length - 1]; // Unused
 
     const systemPrompt = `You are a helpful assistant. Use the following pieces of context to answer the user's question. 
   If you don't know the answer, just say that you don't know, don't try to make up an answer.
@@ -80,6 +80,10 @@ const workflow = new StateGraph<AgentState>({
             default: () => "",
         },
         userId: {
+            reducer: (a: string, b: string) => b,
+            default: () => "",
+        },
+        chatId: {
             reducer: (a: string, b: string) => b,
             default: () => "",
         },
